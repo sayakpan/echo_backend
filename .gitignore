@@ -1,0 +1,68 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django migrations (optional: keep if you track them)
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Environment variables
+.env
+*.env
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.pipenv/
+
+# Django settings local override
+settings_local.py
+
+# SQLite database (if used locally)
+*.sqlite3
+
+# Logs and runtime files
+*.log
+*.pid
+*.seed
+*.coverage
+coverage.xml
+*.pyc
+*.pyo
+
+# Media and static files (if generated)
+media/
+staticfiles/
+static_root/
+media_root/
+
+# VS Code and IDE settings
+.vscode/
+.idea/
+
+# OS/system files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Pip tools
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Docker
+*.bak
+docker-compose.override.yml
+
+# mypy and other type checkers
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
