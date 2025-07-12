@@ -11,7 +11,7 @@ class TimeStampedModel(models.Model):
 
 class Tool(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(unique=True, editable=False)
+    slug = models.SlugField(unique=True, editable=True)
     short_description = models.TextField(max_length=300)
     logo = models.ImageField(upload_to='tool_logos/', null=True, blank=True)
 
