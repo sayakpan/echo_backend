@@ -29,5 +29,7 @@ def extract_school_sections(url: str) -> dict:
             if text:
                 extracted[section_title] = text
 
-    return extracted
+    if not extracted:
+        raise ValueError("Failed to extract any section content from the school page.")
 
+    return extracted

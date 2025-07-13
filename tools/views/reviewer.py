@@ -9,7 +9,7 @@ from django.http import StreamingHttpResponse
 import json
 
 from tools.utils.scraper import extract_school_sections
-from tools.utils.gemini import generate_parent_review
+from tools.utils.gemini import generate_parent_review, generate_static_review
 from tools.utils.ratings import get_default_ratings
 from tools.utils.review_submitter import submit_review
 
@@ -74,16 +74,24 @@ class ReviewUploadExcelView(APIView):
                 return Response({"error": "No valid school profile URLs found."}, status=status.HTTP_400_BAD_REQUEST)
 
             def generate_reviews():
-                yield '{ "results": [\n'
-                for idx, slug in enumerate(slugs):
+                for slug in slugs:
                     school_name = slug.replace("-", " ").title()
                     try:
                         section_data = extract_school_sections(f"https://ezyschooling.com/school/{slug}")
-                        review_text = generate_parent_review(school_name, section_data)
-                        ratings = get_default_ratings()
+                        if not section_data:
+                            raise ValueError("No content extracted from school profile.")
+
+                        # result = generate_parent_review(school_name, section_data)
+                        result = generate_static_review(school_name, section_data)
+                        review_text = result.get("review", "Review generation failed.")
+                        ratings = result.get("ratings", get_default_ratings())
+                        submit = submit_review(slug, token, user_id, review_text, ratings)
+
                         result_data = {
                             "slug": slug,
                             "review": review_text,
+                            "ratings": ratings,
+                            "submitted": submit.get("success", False),
                         }
                     except Exception as e:
                         result_data = {
@@ -92,12 +100,9 @@ class ReviewUploadExcelView(APIView):
                             "error": str(e)
                         }
 
-                    json_chunk = json.dumps(result_data)
-                    comma = "," if idx < len(slugs) - 1 else ""
-                    yield f"{json_chunk}{comma}\n"
-                yield "] }"
+                    yield json.dumps(result_data) + "\n"
 
-            return StreamingHttpResponse(generate_reviews(), content_type='application/json')
+            return StreamingHttpResponse(generate_reviews(), content_type='application/x-ndjson')
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
