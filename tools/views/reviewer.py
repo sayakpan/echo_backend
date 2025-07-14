@@ -81,8 +81,8 @@ class ReviewUploadExcelView(APIView):
                         if not section_data:
                             raise ValueError("No content extracted from school profile.")
 
-                        # result = generate_parent_review(school_name, section_data)
-                        result = generate_static_review(school_name, section_data)
+                        result = generate_parent_review(school_name, section_data)
+                        # result = generate_static_review(school_name, section_data)
                         review_text = result.get("review", "Review generation failed.")
                         ratings = result.get("ratings", get_default_ratings())
                         submit = submit_review(slug, token, user_id, review_text, ratings)
